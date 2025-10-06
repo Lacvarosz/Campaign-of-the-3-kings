@@ -1,3 +1,7 @@
 {
-    "workbench.colorTheme": "Wesnoth Theme"
+    "workbench.colorTheme": "Wesnoth Theme",
+    "wmlclose-tag.activationOnLanguage": [
+        "cfg",
+        "wml"
+    ]
 }
