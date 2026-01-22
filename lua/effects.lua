@@ -1,7 +1,7 @@
 local M = {}
 
 wesnoth.effects.increment_attack = setmetatable({}, {
-    __call = function(cfg, u)
+    __call = function(_, u, cfg)
         local attack = u:find_attack(cfg)
         if attack ~= nil then
             attack.damage = attack.damage - attack.number
@@ -9,7 +9,7 @@ wesnoth.effects.increment_attack = setmetatable({}, {
         end
     end,
 
-    __descr = function(cfg, u)
+    __descr = function(_, u, cfg)
         local attack = u:find_attack(cfg)
         if attack ~= nil then
             local damage = attack.damage - attack.number
