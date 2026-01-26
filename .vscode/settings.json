@@ -3,5 +3,8 @@
     "wmlclose-tag.activationOnLanguage": [
         "cfg",
         "wml"
+    ],
+    "Lua.diagnostics.globals": [
+        "wesnoth"
     ]
 }
