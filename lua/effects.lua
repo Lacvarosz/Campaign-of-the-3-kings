@@ -20,4 +20,17 @@ wesnoth.effects.increment_attack = setmetatable({}, {
     end
 })
 
+wesnoth.effects.variable = function(u, cfg)
+    if not cfg.name = nil or u.variables[cfg.name] == nil then
+        wesnoth.log("error", "variable: hiányzik egy vagy több kötelező paraméter: name, unit variable.")
+        return
+    end
+    if cfg.add then
+        u.variables[cfg.name] = u.variables[cfg.name] + cfg.add
+    elseif cfg.set then
+        u.variables[cfg.name] = cfg.set
+    end
+end
+
+
 return M
