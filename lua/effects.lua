@@ -27,8 +27,7 @@ wesnoth.effects.variable = function(u, cfg)
     end
     if cfg.add then
         if u.variables[cfg.name] == nil then
-            wesnoth.log("error", string.format("variable: hiányzik a variable: %s.", cfg.name))
-            return
+            u.variables[cfg.name] = 0
         end
         u.variables[cfg.name] = u.variables[cfg.name] + cfg.add
     elseif cfg.set then
