@@ -35,5 +35,4 @@ wesnoth.effects.variable = function(u, cfg)
     end
 end
 
-
 return M
