@@ -33,8 +33,6 @@ function wesnoth.wml_actions.quick_on_my_feet(cfg)
         end
         local diff = dist - old_dist
 
-        -- wesnoth.log('warning', string.format("old: %d\ndist: %d\ndiff: %d", old_dist, dist, diff))
-
         unit.variables['qomf_distance'] = dist
 
         if diff > 0 then
@@ -75,6 +73,39 @@ function wesnoth.wml_actions.quick_on_my_feet(cfg)
         unit.variables['qomf_start_x'] = unit.x
         unit.variables['qomf_start_y'] = unit.y
     end
+end
+
+function wesnoth.wml_actions.sharpshooting(cfg)
+    local mode = cfg.mode
+    local unit_id = cfg.unit_id
+    local weapon_name = cfg.weapon_name
+
+    if not unit_id or not weapon_name then
+        wesnoth.log("error", "sharpshooting: hiányzik a unit_id, vagy a weapon_name paraméter.")
+        return
+    end
+    
+    local unit = wesnoth.units.get(unit_id)
+    if not unit then
+        wesnoth.log("warning", "sharpshooting: nem található egység ezzel az ID-vel: " .. tostring(unit_id))
+        return
+    end
+
+    local attack = unit:find_attack{name = weapon_name}
+    if not attack then
+        wesnoth.log("warning", "sharpshooting: nem található támadás ezzel az NAME-vel: " .. tostring(weapon_name))
+        return
+    end
+
+    if mode == "increase" then
+        local old_value = unit.variables['missed_hits'] or 0
+        local addition = cfg.value or 1
+        unit.variables['missed_hits'] = old_value + addition
+    elseif mode == "set" then
+        unit.variables['missed_hits'] = cfg.value or 0
+    end
+    
+    attack.accuracy = 10 + (unit.variables['missed_hits'] or 0) * 5
 end
 
 return M
