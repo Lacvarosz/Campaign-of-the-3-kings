@@ -131,6 +131,7 @@ function wesnoth.wml_actions.aura_of_fire_damage(cfg)
     }
 
     for i, unit in ipairs(units) do
+        wesnoth.log("warning", table.concat(unit.abilities, ", "))
         if M.include(unit.abilities, "aura_of_protection") then
             wesnoth.wml_actions.harm_unit{
                 amount=damage,
