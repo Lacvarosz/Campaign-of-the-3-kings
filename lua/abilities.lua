@@ -1,5 +1,14 @@
 local M = {}
 
+function M.include(array, value)
+    for i, v in ipairs(array) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
 function wesnoth.wml_actions.quick_on_my_feet(cfg)
     local mode = cfg.mode
     local unit_id = cfg.unit_id
@@ -106,6 +115,50 @@ function wesnoth.wml_actions.sharpshooting(cfg)
     end
     
     attack.accuracy = 10 + (unit.variables['missed_hits'] or 0) * 5
+end
+
+function wesnoth.wml_actions.aura_of_fire_damage(cfg)
+    if not cfg.side then
+        wesnoth.log("error", "aura_of_fire_damage: hiányzik a side paraméter.")
+        return
+    end
+
+    local damage = cfg.damage or 4
+
+    local units = wesnoth.units.find_on_map{
+        side = cfg.side,
+        ability = "aura_of_fire",
+    }
+
+    for i, unit in ipairs(units) do
+        if M.include(unit.abilities, "aura_of_protection") then
+            wesnoth.wml_actions.harm_unit{
+                amount=damage,
+                damage_type="fire",
+                kill=true,
+                animate=true,
+                {"filter", {
+                    is_enemy=true,
+                    {"filter_adjacent", {
+                        id=unit.id
+                    }}
+                }},
+            }
+        else
+            wesnoth.wml_actions.harm_unit{
+                amount=damage,
+                damage_type="fire",
+                kill=true,
+                animate=true,
+                {"filter", {
+                    is_enemy=true,
+                    {"filter_adjacent", {
+                        id=unit.id
+                    }}
+                }},
+            }
+        end
+    end
 end
 
 return M
