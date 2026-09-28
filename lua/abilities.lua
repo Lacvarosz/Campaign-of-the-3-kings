@@ -95,7 +95,7 @@ function wesnoth.wml_actions.sharpshooting(cfg)
         unit.variables['missed_hits'] = cfg.value or 0
     end
     
-    attack.accuracy = 10 + (unit.variables['missed_hits'] or 0) * 5
+    attack.accuracy = 10 + (unit.variables['missed_hits'] or 0) * 10
 end
 
 function wesnoth.wml_actions.aura_of_fire_damage(cfg)
