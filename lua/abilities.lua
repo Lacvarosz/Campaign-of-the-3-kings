@@ -141,4 +141,57 @@ function wesnoth.wml_actions.aura_of_fire_damage(cfg)
     end
 end
 
+local function unit_has_ability(unit, ability_id)
+    if unit.matches and unit:matches({ ability = ability_id }) then
+        return true
+    end
+    return M.include(unit.abilities or {}, ability_id)
+end
+
+function wesnoth.wml_actions.rise_rise_rise(cfg)
+    local dead = cfg.unit
+    if not dead then
+        wesnoth.log("warning", "At rise_rise_rise action, unit field is missing from config.")
+        return
+    end
+    if type(dead) == "string" then
+        dead = wesnoth.units.get(dead)
+    end
+    if not dead then
+        return
+    end
+    if dead.race == "undead" then
+        return
+    end
+
+    local x, y = dead.x, dead.y
+    local necromancers = {}
+    for _, loc in ipairs(wesnoth.map.get_adjacent_hexes(x, y)) do
+        local neighbor = wesnoth.units.get(loc)
+        if neighbor and unit_has_ability(neighbor, "rise_rise_rise") then
+            table.insert(necromancers, neighbor)
+        end
+    end
+
+    if #necromancers == 0 then
+        return
+    end
+
+    local summon_side = necromancers[1].side
+    for i = 2, #necromancers do
+        if necromancers[i].side ~= summon_side then
+            return
+        end
+    end
+
+    local zombie_type = cfg.zombie_type or "Walking Corpse"
+    wesnoth.wml_actions.unit {
+        type = zombie_type,
+        side = summon_side,
+        x = x,
+        y = y,
+        animate = true,
+    }
+end
+
 return M
