@@ -184,14 +184,11 @@ function wesnoth.wml_actions.rise_rise_rise(cfg)
         end
     end
 
-    local zombie_type = cfg.zombie_type or "Walking Corpse"
-    wesnoth.wml_actions.unit {
-        type = zombie_type,
-        side = summon_side,
-        x = x,
-        y = y,
-        animate = true,
-    }
+    local zombie_type = cfg.zombie_type or dead.undead_variation or "Walking Corpse"
+    dead.side = summon_side
+    dead:transform(zombie_type)
+    dead.hitpoints = dead.max_hitpoints
+    dead.status.poisoned = false
 end
 
 return M
