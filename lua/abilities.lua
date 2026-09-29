@@ -141,13 +141,6 @@ function wesnoth.wml_actions.aura_of_fire_damage(cfg)
     end
 end
 
-local function unit_has_ability(unit, ability_id)
-    if unit.matches and unit:matches({ ability = ability_id }) then
-        return true
-    end
-    return M.include(unit.abilities or {}, ability_id)
-end
-
 function wesnoth.wml_actions.rise_rise_rise(cfg)
     local dead = cfg.unit
     if not dead then
@@ -168,7 +161,7 @@ function wesnoth.wml_actions.rise_rise_rise(cfg)
     local necromancers = {}
     for _, loc in ipairs(wesnoth.map.get_adjacent_hexes(x, y)) do
         local neighbor = wesnoth.units.get(loc)
-        if neighbor and unit_has_ability(neighbor, "rise_rise_rise") then
+        if neighbor and neighbor:ability("rise_rise_rise") then
             table.insert(necromancers, neighbor)
         end
     end
