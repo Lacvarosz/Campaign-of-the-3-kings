@@ -142,42 +142,38 @@ function wesnoth.wml_actions.aura_of_fire_damage(cfg)
 end
 
 function wesnoth.wml_actions.rise_rise_rise(cfg)
-    local dead = cfg.unit
-    if not dead then
-        wesnoth.log("warning", "At rise_rise_rise action, unit field is missing from config.")
+    if not cfg.x or not cfg.y then
+        wesnoth.log("warning", "At rise_rise_rise action, x or y field is missing from config.")
         return
     end
-    if type(dead) == "string" then
-        dead = wesnoth.units.get(dead)
-    end
+    local dead = wesnoth.units.get(cfg.x, cfg.y)
     if not dead then
+        wesnoth.log("warning", "Unit not found")
         return
     end
+
     if dead.race == "undead" then
         return
     end
 
-    local x, y = dead.x, dead.y
-    local necromancers = {}
-    for _, loc in ipairs(wesnoth.map.get_adjacent_hexes(x, y)) do
-        local neighbor = wesnoth.units.get(loc)
-        if neighbor and neighbor:ability("rise_rise_rise") then
-            table.insert(necromancers, neighbor)
+    local summon_side = nil
+    for x, y in wesnoth.current.map:iter_adjacent(dead.x, dead.y) do
+        local neighbour = wesnoth.units.get(x, y)
+        if neighbour and neighbour:matches({ability = "rise_rise_rise"}) then
+            if summon_side ~= nil and wesnoth.sides.is_enemy(summon_side, neighbour.side) then
+                return
+            end
+            if summon_side == nil then
+                summon_side = neighbour.side
+            end
         end
     end
 
-    if #necromancers == 0 then
+    if summon_side == nil then
         return
     end
 
-    local summon_side = necromancers[1].side
-    for i = 2, #necromancers do
-        if necromancers[i].side ~= summon_side then
-            return
-        end
-    end
-
-    local zombie_type = cfg.zombie_type or dead.undead_variation or "Walking Corpse"
+    local zombie_type = cfg.zombie_type or "Walking Corpse"
     dead.side = summon_side
     dead:transform(zombie_type)
     dead.hitpoints = dead.max_hitpoints
