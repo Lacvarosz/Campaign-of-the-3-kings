@@ -180,4 +180,36 @@ function wesnoth.wml_actions.rise_rise_rise(cfg)
     dead.status.poisoned = false
 end
 
+function wesnoth.wml_actions.ultimate_heal(cfg)
+    if not cfg.side then
+        wesnoth.log("warning", "At ultimate_heal action, side field is missing from config.")
+        return
+    end
+
+    local healers = wesnoth.units.find_on_map{
+        side = cfg.side,
+        ability = "ultimate_heal",
+    }
+
+    for i, healer in ipairs(healers) do
+        for j, unit in ipairs(wesnoth.units.find_on_map{
+            {"not", {
+                id=healer.id,
+            }},
+        }) do
+            if not wesnoth.sides.is_enemy(cfg.side, unit.side)
+            and 
+            wesnoth.map.distance_between({healer.x, healer.y}, {unit.x, unit.y}) <= 2 then
+                wesnoth.wml_actions.heal_unit{
+                    {"filter", {
+                        id=unit.id
+                    }},
+                    amount = 8,
+                    animate = true,
+                }
+            end
+        end
+    end
+end
+
 return M
